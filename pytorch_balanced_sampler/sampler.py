@@ -8,10 +8,7 @@ class SamplerFactory:
     """
     Factory class to create balanced samplers.
     """
-
-    def __init__(self, verbose=0):
-        self.logger = setup_logger(self.__class__.__name__, verbose)
-
+    
     def get(self, class_idxs, batch_size, n_batches, alpha, kind):
         """
         Parameters
