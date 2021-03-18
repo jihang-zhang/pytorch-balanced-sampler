@@ -42,13 +42,11 @@ class SamplerFactory:
         raise Exception(f'Received kind {kind}, must be `random` or `fixed`')
 
     def random(self, class_idxs, batch_size, n_batches, alpha):
-        self.logger.info(f'Creating `{WeightedRandomBatchSampler.__class__.__name__}`...')
         class_sizes, weights = self._weight_classes(class_idxs, alpha)
         sample_rates = self._sample_rates(weights, class_sizes)
         return WeightedRandomBatchSampler(sample_rates, class_idxs, batch_size, n_batches)
 
     def fixed(self, class_idxs, batch_size, n_batches, alpha):
-        self.logger.info(f'Creating `{WeightedFixedBatchSampler.__class__.__name__}`...')
         class_sizes, weights = self._weight_classes(class_idxs, alpha)
         class_samples_per_batch = self._fix_batches(weights, class_sizes, batch_size, n_batches)
         return WeightedFixedBatchSampler(class_samples_per_batch, class_idxs, n_batches)
@@ -61,9 +59,6 @@ class SamplerFactory:
         original_weights = np.asarray([size / n_samples for size in class_sizes])
         uniform_weights = np.repeat(1 / n_classes, n_classes)
 
-        self.logger.info(f'Sample population absolute class sizes: {class_sizes}')
-        self.logger.info(f'Sample population relative class sizes: {original_weights}')
-
         weights = self._balance_weights(uniform_weights, original_weights, alpha)
         return class_sizes, weights
 
@@ -71,7 +66,6 @@ class SamplerFactory:
         assert alpha >= 0 and alpha <= 1, f'invalid alpha {alpha}, must be 0 <= alpha <= 1'
         beta = 1 - alpha
         weights = (alpha * weight_a) + (beta * weight_b)
-        self.logger.info(f'Target batch class distribution {weights} using alpha={alpha}')
         return weights
 
     def _sample_rates(self, weights, class_sizes):
